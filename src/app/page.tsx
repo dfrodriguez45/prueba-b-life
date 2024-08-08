@@ -1,113 +1,227 @@
+"use client";
+import { motion } from "framer-motion";
 import Image from "next/image";
+import { useRef, useState } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+
+import CategoryIconLabel from "@/components/CategoryIconLabel";
+import CategoryListItem from "@/components/CategoryListItem";
+import Footer from "@/components/Footer";
+import ProductCard from "@/components/ProductCard";
+import { CATEGORIES, CATEGORIESLIST, PRODUCTS, SETTINGS_SLIDER } from "@/constants";
+import { Product } from "@/types/Product";
 
 export default function Home() {
+  const [products, setProducts] = useState(PRODUCTS);
+  const sliderRef = useRef<Slider | null>(null);
+
+  function handleNext() {
+    sliderRef.current?.slickNext();
+  }
+
+  function handlePrev() {
+    sliderRef.current?.slickPrev();
+  }
+
+  function handleFavorite(product: Product) {
+    setProducts((prev) =>
+      prev.map((item) =>
+        item.id === product.id
+          ? { ...item, isFavorite: !item.isFavorite }
+          : item,
+      ),
+    );
+  }
+
+  function handleAddToCart(product: Product) {
+    setProducts((prev) =>
+      prev.map((item) =>
+        item.id === product.id
+          ? { ...item, isAddedToCart: !item.isAddedToCart }
+          : item,
+      ),
+    );
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      {/* Banner */}
+      <section className="max-h-lvh w-full overflow-hidden bg-neutral-100 px-6 py-14 md:px-20 xl:px-40">
+        <div className="relative m-auto flex max-w-5xl flex-col flex-nowrap gap-8">
+          <h2 className="whitespace-pre-line text-balance font-prompt text-5xl leading-snug lg:w-1/2">
+            Grab{" "}
+            <span className="inline-block w-min -rotate-3 rounded-3xl bg-primary px-5 py-2 text-white">
+              50%
+            </span>{" "}
+            Off Smartphone Collection
+          </h2>
+          <p className="text-balance text-lg font-normal lg:w-1/2">
+            Lorem ipsum dolor sit amet consectetur. Eleifend nec morbi tellus
+            vitae leo nunc.
+          </p>
+          <div className="flex flex-row items-center justify-start gap-4">
+            <Image src="/Xiphone-14.png" alt="apple" width={137} height={137} />
+            <h3 className="md:max-w-[20%] text-3xl font-semibold">
+              Xiphone 14 Edition
+            </h3>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, x: 0, y: 100, rotate: 6 }}
+            animate={{ opacity: 1, x: 0, y: 0, rotate: 6 }}
+            transition={{ duration: 0.6 }}
+            className="right-0 w-1/2 lg:absolute"
           >
-            By{" "}
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+              src="/mobile.png"
+              alt="mobile"
+              width={546.42}
+              height={762.85}
             />
-          </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 450, y: 600 }}
+            animate={{ opacity: 1, x: 450, y: 300 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="md:absolute w-40"
+          >
+            <Image
+              src="/mobile-tag.png"
+              alt="mobile-tag"
+              width={215}
+              height={175.98}
+            />
+          </motion.div>
         </div>
-      </div>
+      </section>
+      {/* Categories */}
+      <section className="flex flex-col gap-10 px-6 py-14 md:px-16 xl:px-28">
+        <h2 className="text-center font-prompt text-5xl">
+          What <span className="text-primary">we</span> provide?
+        </h2>
+        <ul className="flex flex-row flex-wrap items-start justify-center gap-20">
+          {CATEGORIES.map((category) => (
+            <motion.li
+              key={category.id}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                visible: { opacity: 1, y: 0 },
+                hidden: { opacity: 0, y: 100 },
+              }}
+              transition={{
+                duration: 0.3,
+              }}
+              className="cursor-pointer"
+            >
+              <CategoryIconLabel {...category} />
+            </motion.li>
+          ))}
+        </ul>
+      </section>
+      {/* Products */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          visible: { opacity: 1, y: 0 },
+          hidden: { opacity: 0, y: 100 },
+        }}
+        transition={{
+          duration: 0.75,
+          delay: 0.25,
+        }}
+        className="flex flex-col gap-10 overflow-x-hidden px-6 py-14 md:px-16 xl:px-28"
+      >
+        <div className="flex flex-row items-center justify-between gap-4">
+          <h3 className="text-start font-prompt text-4xl">
+            New <span className="text-primary">arrival</span> for you
+          </h3>
+          <div className="hidden space-x-3 md:inline-block">
+            <motion.button
+              type="button"
+              className="rounded-full border border-black p-2"
+              whileTap={{ scale: 0.9 }}
+              onClick={handlePrev}
+            >
+              <Image
+                src="/icons/arrow-left.svg"
+                alt="arrow-left"
+                width={16}
+                height={16}
+              />
+            </motion.button>
+            <motion.button
+              type="button"
+              className="rounded-full bg-[#AFE638] p-2"
+              whileTap={{ scale: 0.9 }}
+              onClick={handleNext}
+            >
+              <Image
+                src="/icons/arrow-right.svg"
+                alt="arrow-right"
+                width={16}
+                height={16}
+              />
+            </motion.button>
+          </div>
+        </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        <div className="flex flex-col gap-10 md:flex-row">
+          <ul className="text-nowrap pt-10">
+            {CATEGORIESLIST.map((category) => (
+              <CategoryListItem key={category.id} {...category} />
+            ))}
+          </ul>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <div className="space-x-3 md:hidden">
+            <motion.button
+              type="button"
+              className="rounded-full border border-black p-2"
+              whileTap={{ scale: 0.9 }}
+              onClick={handlePrev}
+            >
+              <Image
+                src="/icons/arrow-left.svg"
+                alt="arrow-left"
+                width={16}
+                height={16}
+              />
+            </motion.button>
+            <motion.button
+              type="button"
+              className="rounded-full bg-[#AFE638] p-2"
+              whileTap={{ scale: 0.9 }}
+              onClick={handleNext}
+            >
+              <Image
+                src="/icons/arrow-right.svg"
+                alt="arrow-right"
+                width={16}
+                height={16}
+              />
+            </motion.button>
+          </div>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          <div className="slider-container">
+            <Slider ref={sliderRef} {...SETTINGS_SLIDER}>
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onFavorite={handleFavorite}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </Slider>
+          </div>
+        </div>
+      </motion.section>
+      <Footer />
+    </>
   );
 }
